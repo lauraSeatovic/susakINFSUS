@@ -1,0 +1,54 @@
+﻿@model IEnumerable<susak.Models.Clanarina>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Iznos)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DatumUplate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Clan)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Iznos)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DatumUplate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                @item.Clan.Ime @item.Clan.Prezime
+            </td>
+
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.ClanarinaId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.ClanarinaId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.ClanarinaId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

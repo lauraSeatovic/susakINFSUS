@@ -1,0 +1,87 @@
+﻿{
+   "CodeGenerationMode": 3,
+   "ContextClassName": "susakContext",
+   "ContextNamespace": null,
+   "DefaultDacpacSchema": null,
+   "FilterSchemas": false,
+   "IncludeConnectionString": false,
+   "ModelNamespace": null,
+   "OutputContextPath": null,
+   "OutputPath": "Models",
+   "PreserveCasingWithRegex": true,
+   "ProjectRootNamespace": "susak",
+   "Schemas": null,
+   "SelectedHandlebarsLanguage": 0,
+   "SelectedToBeGenerated": 0,
+   "T4TemplatePath": null,
+   "Tables": [
+      {
+         "Name": "[dbo].[Clan]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Clanarina]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ClanDisciplina]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Disciplina]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Korisnik]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Natjecanje]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Prisustvo]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Sudjelovanje]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Trener]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TrenerDisciplina]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Trening]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Uloga]",
+         "ObjectType": 0
+      }
+   ],
+   "UiHint": "laptop-ghps9d1o\\sqlserver.susak.dbo",
+   "UncountableWords": null,
+   "UseBoolPropertiesWithoutDefaultSql": false,
+   "UseDatabaseNames": false,
+   "UseDateOnlyTimeOnly": false,
+   "UseDbContextSplitting": false,
+   "UseFluentApiOnly": true,
+   "UseHandleBars": false,
+   "UseHierarchyId": false,
+   "UseInflector": false,
+   "UseLegacyPluralizer": false,
+   "UseManyToManyEntity": false,
+   "UseNoDefaultConstructor": false,
+   "UseNoObjectFilter": false,
+   "UseNodaTime": false,
+   "UseNullableReferences": false,
+   "UseSchemaFolders": false,
+   "UseSchemaNamespaces": false,
+   "UseSpatial": false,
+   "UseT4": false
+}
