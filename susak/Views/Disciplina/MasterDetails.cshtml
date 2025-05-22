@@ -1,0 +1,66 @@
+﻿@model susak.Models.Disciplina
+
+@{
+    ViewData["Title"] = "Detalji discipline";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">Detalji discipline</h2>
+        <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@Model.DisciplinaId">Uredi disciplinu</a>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h4 class="card-title">@Model.Naziv</h4>
+            <p class="card-text">@Model.Opis</p>
+
+            <h5 class="mt-4">Treneri:</h5>
+            <ul class="">
+                @foreach (var trener in Model.Trener)
+                {
+                    <li class="">
+                        @trener.Ime @trener.Prezime (@trener.StrucnaSprema)
+                    </li>
+                }
+            </ul>
+        </div>
+        
+    </div>
+
+    
+
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h4 class="mb-0">Članovi</h4>
+        <a class="btn btn-success btn-sm" asp-controller="Clan" asp-action="Create">Add new</a>
+    </div>
+    <table class="table table-striped">
+        <thead class="table-light">
+            <tr>
+                <th>Ime</th>
+                <th>Prezime</th>
+                <th>OIB</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var clan in Model.Clan)
+            {
+                <tr>
+                    <td>@clan.Ime</td>
+                    <td>@clan.Prezime</td>
+                    <td>@clan.Oib</td>
+                    <td>
+                        <a class="btn btn-sm btn-primary" asp-controller="Clan" asp-action="Edit" asp-route-id="@clan.ClanId">Edit</a>
+                        <a class="btn btn-sm btn-info" asp-controller="Clan" asp-action="Details" asp-route-id="@clan.ClanId">Details</a>
+                        <a class="btn btn-sm btn-danger" asp-controller="Clan" asp-action="Delete" asp-route-id="@clan.ClanId">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    
+
+    <a class="btn btn-secondary mt-3" asp-action="Index">Natrag na popis</a>
+</div>

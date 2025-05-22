@@ -19,10 +19,12 @@ namespace susak.Controllers
         }
 
         // GET: Disciplina
+        /*
         public async Task<IActionResult> Index()
         {
             return View(await _context.Disciplina.ToListAsync());
         }
+        */
 
         // GET: Disciplina/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -151,6 +153,40 @@ namespace susak.Controllers
         private bool DisciplinaExists(int id)
         {
             return _context.Disciplina.Any(e => e.DisciplinaId == id);
+        }
+
+        public async Task<IActionResult> MasterDetails(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var disciplina = await _context.Disciplina
+                .Include(d => d.Trener)
+                .Include(d => d.Clan)
+                .Include(d => d.Trening)
+                .FirstOrDefaultAsync(m => m.DisciplinaId == id);
+
+            if (disciplina == null)
+            {
+                return NotFound();
+            }
+
+            return View(disciplina);
+        }
+
+        public async Task<IActionResult> Index(string searchString)
+        {
+            var discipline = from d in _context.Disciplina
+                             select d;
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                discipline = discipline.Where(d => d.Naziv.Contains(searchString));
+            }
+
+            return View(await discipline.ToListAsync());
         }
     }
 }
