@@ -11,14 +11,9 @@ public class DisciplinaRepository : IDisciplinaRepository
         _context = context;
     }
 
-    public async Task<List<Disciplina>> GetAllAsync(string? search = null)
+    public async Task<List<Disciplina>> GetAllAsync()
     {
-        var query = _context.Disciplina.AsQueryable();
-        if (!string.IsNullOrEmpty(search))
-        {
-            query = query.Where(d => d.Naziv.Contains(search));
-        }
-        return await query.ToListAsync();
+        return await _context.Disciplina.ToListAsync();
     }
 
     public async Task<Disciplina?> GetByIdAsync(int id)

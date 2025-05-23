@@ -11,9 +11,9 @@ namespace susak.Controllers
 {
     public class DisciplinaController : Controller
     {
-        private readonly IDisciplinaRepository _disciplinaService;
+        private readonly IDisciplinaService _disciplinaService;
 
-        public DisciplinaController(IDisciplinaRepository disciplinaService)
+        public DisciplinaController(IDisciplinaService disciplinaService)
         {
             _disciplinaService = disciplinaService;
         }

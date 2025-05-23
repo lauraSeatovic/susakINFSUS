@@ -2,7 +2,7 @@
 
 public interface IDisciplinaRepository
 {
-    Task<List<Disciplina>> GetAllAsync(string? search = null);
+    Task<List<Disciplina>> GetAllAsync();
     Task<Disciplina?> GetByIdAsync(int id);
     Task<Disciplina?> GetByIdWithRelationsAsync(int id);
     Task AddAsync(Disciplina disciplina);

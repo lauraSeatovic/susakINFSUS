@@ -11,7 +11,12 @@ public class DisciplinaService : IDisciplinaService
 
     public async Task<List<Disciplina>> GetAllAsync(string? search = null)
     {
-        return await _repository.GetAllAsync(search);
+        var all = await _repository.GetAllAsync();
+
+        if (!string.IsNullOrEmpty(search))
+            all = all.Where(d => d.Naziv.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
+
+        return all;
     }
 
     public async Task<Disciplina?> GetByIdAsync(int id)
@@ -81,6 +86,6 @@ public class DisciplinaService : IDisciplinaService
 
     public List<object> GetClanoviSelectList()
     {
-        return _repository.GetTreneriSelectList();
+        return _repository.GetClanoviSelectList();
     }
 }
