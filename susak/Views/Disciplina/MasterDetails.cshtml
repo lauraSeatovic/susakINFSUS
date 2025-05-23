@@ -28,13 +28,18 @@
         
     </div>
 
-    
-
-    <div class="d-flex justify-content-between align-items-center mb-2">
-        <h4 class="mb-0">Članovi</h4>
-        <a class="btn btn-success btn-sm" asp-controller="Clan" asp-action="Create">Add new</a>
+    <div class="d-flex justify-content-end mb-3">
+        <a class="btn btn-success btn-sm me-2"
+           asp-controller="Disciplina"
+           asp-action="AddNoviClanToDisciplina"
+           asp-route-id="@Model.DisciplinaId">Dodaj novog člana</a>
+        <a class="btn btn-primary btn-sm"
+           asp-controller="Disciplina"
+           asp-action="AddPostojeciClanToDisciplina"
+           asp-route-id="@Model.DisciplinaId">Dodaj postojećeg člana</a>
     </div>
-    <table class="table table-striped">
+
+    <table class="table table-striped" style="table-layout: fixed; width: 100%;">
         <thead class="table-light">
             <tr>
                 <th>Ime</th>
@@ -50,10 +55,14 @@
                     <td>@clan.Ime</td>
                     <td>@clan.Prezime</td>
                     <td>@clan.Oib</td>
-                    <td>
-                        <a class="btn btn-sm btn-primary" asp-controller="Clan" asp-action="Edit" asp-route-id="@clan.ClanId">Edit</a>
-                        <a class="btn btn-sm btn-info" asp-controller="Clan" asp-action="Details" asp-route-id="@clan.ClanId">Details</a>
-                        <a class="btn btn-sm btn-danger" asp-controller="Clan" asp-action="Delete" asp-route-id="@clan.ClanId">Delete</a>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-secondary" asp-controller="Clan" asp-action="Edit" asp-route-id="@clan.ClanId" asp-route-returnUrl="@Context.Request.Path">Uredi</a>
+                        <a class="btn btn-sm btn-info" asp-controller="Clan" asp-action="Details" asp-route-id="@clan.ClanId" asp-route-returnUrl="@Context.Request.Path">Detalji</a>
+                        <form asp-action="UkloniClan" method="post" class="d-inline">
+                            <input type="hidden" name="disciplinaId" value="@Model.DisciplinaId" />
+                            <input type="hidden" name="clanId" value="@clan.ClanId" />
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Jeste li sigurni da želite ukloniti člana?');">Ukloni</button>
+                        </form>
                     </td>
                 </tr>
             }

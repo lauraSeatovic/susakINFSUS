@@ -1,0 +1,18 @@
+﻿<form asp-action="AddNoviClanToDisciplina" method="post">
+    <input type="hidden" name="DisciplinaId" value="@ViewBag.DisciplinaId" />
+
+    <div class="form-group">
+        <label>Ime</label>
+        <input type="text" name="Ime" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label>Prezime</label>
+        <input type="text" name="Prezime" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label>OIB</label>
+        <input type="text" name="Oib" class="form-control" required />
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-2">Dodaj novog člana</button>
+</form>

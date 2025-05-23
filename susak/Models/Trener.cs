@@ -2,6 +2,7 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace susak.Models;
 
@@ -13,6 +14,7 @@ public partial class Trener
 
     public string Prezime { get; set; }
 
+    [Display(Name = "Stručna sprema")]
     public string StrucnaSprema { get; set; }
 
     public int? KorisnikId { get; set; }

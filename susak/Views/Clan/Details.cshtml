@@ -1,54 +1,38 @@
 ﻿@model susak.Models.Clan
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalji člana";
 }
 
-<h1>Details</h1>
+<h1 class="mb-4">Detalji člana</h1>
 
-<div>
-    <h4>Clan</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Ime)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Ime)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Prezime)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Prezime)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Oib)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Oib)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DatumRodjenja)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DatumRodjenja)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Adresa)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Adresa)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Kontakt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Kontakt)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.ClanId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        @Model.Ime @Model.Prezime
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Ime</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(m => m.Ime)</dd>
+
+            <dt class="col-sm-3">Prezime</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(m => m.Prezime)</dd>
+
+            <dt class="col-sm-3">OIB</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(m => m.Oib)</dd>
+
+            <dt class="col-sm-3">Datum rođenja</dt>
+            <dd class="col-sm-9">@(Model.DatumRodjenja.HasValue ? Model.DatumRodjenja.Value.ToString("dd.MM.yyyy") : "")</dd>
+
+            <dt class="col-sm-3">Adresa</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(m => m.Adresa)</dd>
+
+            <dt class="col-sm-3">Kontakt</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(m => m.Kontakt)</dd>
+        </dl>
+    </div>
+    <div class="card-footer">
+        <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.ClanId" asp-route-returnUrl="@ViewData["ReturnUrl"]">Uredi</a>
+        <a href="@ViewData["ReturnUrl"]" class="btn btn-secondary">Natrag</a>
+    </div>
 </div>

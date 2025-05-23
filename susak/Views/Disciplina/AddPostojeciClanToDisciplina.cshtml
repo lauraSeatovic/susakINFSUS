@@ -1,0 +1,10 @@
+﻿<form asp-action="AddPostojeciClanToDisciplina" method="post">
+    <input type="hidden" name="DisciplinaId" value="@ViewBag.DisciplinaId" />
+
+    <div class="form-group">
+        <label for="ClanId">Odaberi postojećeg člana</label>
+        <select name="ClanId" class="form-control" asp-items="ViewBag.Clanovi"></select>
+    </div>
+
+    <button type="submit" class="btn btn-success mt-2">Dodaj postojećeg člana</button>
+</form>

@@ -9,90 +9,90 @@ using susak.Models;
 
 namespace susak.Controllers
 {
-    public class ClanController : Controller
+    public class TrenerController : Controller
     {
         private readonly susakContext _context;
 
-        public ClanController(susakContext context)
+        public TrenerController(susakContext context)
         {
             _context = context;
         }
 
-        // GET: Clan
+        // GET: Trener
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Clan.ToListAsync());
+            var susakContext = _context.Trener.Include(t => t.Korisnik);
+            return View(await susakContext.ToListAsync());
         }
 
-        // GET: Clan/Details/5
-        public async Task<IActionResult> Details(int? id, string? returnUrl = null)
+        // GET: Trener/Details/5
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var clan = await _context.Clan
-                .FirstOrDefaultAsync(m => m.ClanId == id);
-            if (clan == null)
+            var trener = await _context.Trener
+                .Include(t => t.Korisnik)
+                .FirstOrDefaultAsync(m => m.TrenerId == id);
+            if (trener == null)
             {
                 return NotFound();
             }
 
-            ViewData["ReturnUrl"] = returnUrl ?? Url.Action("Index");
-
-            return View(clan);
+            return View(trener);
         }
 
-        // GET: Clan/Create
+        // GET: Trener/Create
         public IActionResult Create()
         {
+            ViewData["KorisnikId"] = new SelectList(_context.Korisnik, "KorisnikId", "KorisnickoIme");
             return View();
         }
 
-        // POST: Clan/Create
+        // POST: Trener/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ClanId,Ime,Prezime,Oib,DatumRodjenja,Adresa,Kontakt")] Clan clan)
+        public async Task<IActionResult> Create([Bind("TrenerId,Ime,Prezime,StrucnaSprema,KorisnikId")] Trener trener)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(clan);
+                _context.Add(trener);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(clan);
+            ViewData["KorisnikId"] = new SelectList(_context.Korisnik, "KorisnikId", "KorisnickoIme", trener.KorisnikId);
+            return View(trener);
         }
 
-        // GET: Clan/Edit/5
-        public async Task<IActionResult> Edit(int? id, string returnUrl = null)
+        // GET: Trener/Edit/5
+        public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var clan = await _context.Clan.FindAsync(id);
-            if (clan == null)
+            var trener = await _context.Trener.FindAsync(id);
+            if (trener == null)
             {
                 return NotFound();
             }
-
-            ViewData["ReturnUrl"] = returnUrl;
-            return View(clan);
+            ViewData["KorisnikId"] = new SelectList(_context.Korisnik, "KorisnikId", "KorisnickoIme", trener.KorisnikId);
+            return View(trener);
         }
 
-
-        // POST: Clan/Edit/5
+        // POST: Trener/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ClanId,Ime,Prezime,Oib,DatumRodjenja,Adresa,Kontakt")] Clan clan, string returnUrl = null)
+        public async Task<IActionResult> Edit(int id, [Bind("TrenerId,Ime,Prezime,StrucnaSprema,KorisnikId")] Trener trener)
         {
-            if (id != clan.ClanId)
+            if (id != trener.TrenerId)
             {
                 return NotFound();
             }
@@ -101,12 +101,12 @@ namespace susak.Controllers
             {
                 try
                 {
-                    _context.Update(clan);
+                    _context.Update(trener);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ClanExists(clan.ClanId))
+                    if (!TrenerExists(trener.TrenerId))
                     {
                         return NotFound();
                     }
@@ -115,22 +115,13 @@ namespace susak.Controllers
                         throw;
                     }
                 }
-
-                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-                {
-                    return Redirect(returnUrl);
-                }
-                else
-                {
-                    return RedirectToAction(nameof(Index));
-                }
+                return RedirectToAction(nameof(Index));
             }
-
-            ViewData["ReturnUrl"] = returnUrl;
-            return View(clan);
+            ViewData["KorisnikId"] = new SelectList(_context.Korisnik, "KorisnikId", "KorisnickoIme", trener.KorisnikId);
+            return View(trener);
         }
 
-        // GET: Clan/Delete/5
+        // GET: Trener/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -138,34 +129,35 @@ namespace susak.Controllers
                 return NotFound();
             }
 
-            var clan = await _context.Clan
-                .FirstOrDefaultAsync(m => m.ClanId == id);
-            if (clan == null)
+            var trener = await _context.Trener
+                .Include(t => t.Korisnik)
+                .FirstOrDefaultAsync(m => m.TrenerId == id);
+            if (trener == null)
             {
                 return NotFound();
             }
 
-            return View(clan);
+            return View(trener);
         }
 
-        // POST: Clan/Delete/5
+        // POST: Trener/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var clan = await _context.Clan.FindAsync(id);
-            if (clan != null)
+            var trener = await _context.Trener.FindAsync(id);
+            if (trener != null)
             {
-                _context.Clan.Remove(clan);
+                _context.Trener.Remove(trener);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ClanExists(int id)
+        private bool TrenerExists(int id)
         {
-            return _context.Clan.Any(e => e.ClanId == id);
+            return _context.Trener.Any(e => e.TrenerId == id);
         }
     }
 }

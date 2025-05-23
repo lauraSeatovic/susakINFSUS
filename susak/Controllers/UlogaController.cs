@@ -9,90 +9,85 @@ using susak.Models;
 
 namespace susak.Controllers
 {
-    public class ClanController : Controller
+    public class UlogaController : Controller
     {
         private readonly susakContext _context;
 
-        public ClanController(susakContext context)
+        public UlogaController(susakContext context)
         {
             _context = context;
         }
 
-        // GET: Clan
+        // GET: Uloga
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Clan.ToListAsync());
+            return View(await _context.Uloga.ToListAsync());
         }
 
-        // GET: Clan/Details/5
-        public async Task<IActionResult> Details(int? id, string? returnUrl = null)
+        // GET: Uloga/Details/5
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var clan = await _context.Clan
-                .FirstOrDefaultAsync(m => m.ClanId == id);
-            if (clan == null)
+            var uloga = await _context.Uloga
+                .FirstOrDefaultAsync(m => m.UlogaId == id);
+            if (uloga == null)
             {
                 return NotFound();
             }
 
-            ViewData["ReturnUrl"] = returnUrl ?? Url.Action("Index");
-
-            return View(clan);
+            return View(uloga);
         }
 
-        // GET: Clan/Create
+        // GET: Uloga/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Clan/Create
+        // POST: Uloga/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ClanId,Ime,Prezime,Oib,DatumRodjenja,Adresa,Kontakt")] Clan clan)
+        public async Task<IActionResult> Create([Bind("UlogaId,Naziv")] Uloga uloga)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(clan);
+                _context.Add(uloga);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(clan);
+            return View(uloga);
         }
 
-        // GET: Clan/Edit/5
-        public async Task<IActionResult> Edit(int? id, string returnUrl = null)
+        // GET: Uloga/Edit/5
+        public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var clan = await _context.Clan.FindAsync(id);
-            if (clan == null)
+            var uloga = await _context.Uloga.FindAsync(id);
+            if (uloga == null)
             {
                 return NotFound();
             }
-
-            ViewData["ReturnUrl"] = returnUrl;
-            return View(clan);
+            return View(uloga);
         }
 
-
-        // POST: Clan/Edit/5
+        // POST: Uloga/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ClanId,Ime,Prezime,Oib,DatumRodjenja,Adresa,Kontakt")] Clan clan, string returnUrl = null)
+        public async Task<IActionResult> Edit(int id, [Bind("UlogaId,Naziv")] Uloga uloga)
         {
-            if (id != clan.ClanId)
+            if (id != uloga.UlogaId)
             {
                 return NotFound();
             }
@@ -101,12 +96,12 @@ namespace susak.Controllers
             {
                 try
                 {
-                    _context.Update(clan);
+                    _context.Update(uloga);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ClanExists(clan.ClanId))
+                    if (!UlogaExists(uloga.UlogaId))
                     {
                         return NotFound();
                     }
@@ -115,22 +110,12 @@ namespace susak.Controllers
                         throw;
                     }
                 }
-
-                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-                {
-                    return Redirect(returnUrl);
-                }
-                else
-                {
-                    return RedirectToAction(nameof(Index));
-                }
+                return RedirectToAction(nameof(Index));
             }
-
-            ViewData["ReturnUrl"] = returnUrl;
-            return View(clan);
+            return View(uloga);
         }
 
-        // GET: Clan/Delete/5
+        // GET: Uloga/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -138,34 +123,34 @@ namespace susak.Controllers
                 return NotFound();
             }
 
-            var clan = await _context.Clan
-                .FirstOrDefaultAsync(m => m.ClanId == id);
-            if (clan == null)
+            var uloga = await _context.Uloga
+                .FirstOrDefaultAsync(m => m.UlogaId == id);
+            if (uloga == null)
             {
                 return NotFound();
             }
 
-            return View(clan);
+            return View(uloga);
         }
 
-        // POST: Clan/Delete/5
+        // POST: Uloga/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var clan = await _context.Clan.FindAsync(id);
-            if (clan != null)
+            var uloga = await _context.Uloga.FindAsync(id);
+            if (uloga != null)
             {
-                _context.Clan.Remove(clan);
+                _context.Uloga.Remove(uloga);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ClanExists(int id)
+        private bool UlogaExists(int id)
         {
-            return _context.Clan.Any(e => e.ClanId == id);
+            return _context.Uloga.Any(e => e.UlogaId == id);
         }
     }
 }
