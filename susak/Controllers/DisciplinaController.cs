@@ -11,35 +11,22 @@ namespace susak.Controllers
 {
     public class DisciplinaController : Controller
     {
-        private readonly susakContext _context;
+        private readonly IDisciplinaRepository _disciplinaService;
 
-        public DisciplinaController(susakContext context)
+        public DisciplinaController(IDisciplinaRepository disciplinaService)
         {
-            _context = context;
+            _disciplinaService = disciplinaService;
         }
-
-        // GET: Disciplina
-        /*
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.Disciplina.ToListAsync());
-        }
-        */
 
         // GET: Disciplina/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
-            var disciplina = await _context.Disciplina
-                .FirstOrDefaultAsync(m => m.DisciplinaId == id);
+            var disciplina = await _disciplinaService.GetByIdAsync(id.Value);
             if (disciplina == null)
-            {
                 return NotFound();
-            }
 
             return View(disciplina);
         }
@@ -51,16 +38,14 @@ namespace susak.Controllers
         }
 
         // POST: Disciplina/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("DisciplinaId,Naziv,Opis")] Disciplina disciplina)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(disciplina);
-                await _context.SaveChangesAsync();
+                await _disciplinaService.AddAsync(disciplina);
+                await _disciplinaService.SaveAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(disciplina);
@@ -70,138 +55,76 @@ namespace susak.Controllers
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
-            var disciplina = await _context.Disciplina
-                                    .Include(d => d.Trener)
-                                    .FirstOrDefaultAsync(d => d.DisciplinaId == id);
+            var disciplina = await _disciplinaService.GetByIdWithRelationsAsync(id.Value);
             if (disciplina == null)
-            {
                 return NotFound();
-            }
 
-            var treneri = _context.Trener
-                            .Select(t => new {
-                                t.TrenerId,
-                                ImePrezime = t.Ime + " " + t.Prezime
-                            })
-                            .ToList();
-
-            ViewBag.SviTreneri = new SelectList(treneri, "TrenerId", "ImePrezime");
+            var treneriSelectList = _disciplinaService.GetTreneriSelectList();
+            ViewBag.SviTreneri = new SelectList(treneriSelectList, "TrenerId", "ImePrezime");
 
             return View(disciplina);
         }
 
         // POST: Disciplina/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("DisciplinaId,Naziv,Opis")] Disciplina disciplina)
         {
             if (id != disciplina.DisciplinaId)
-            {
                 return NotFound();
-            }
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(disciplina);
-                    await _context.SaveChangesAsync();
+                    await _disciplinaService.UpdateAsync(disciplina);
+                    await _disciplinaService.SaveAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!DisciplinaExists(disciplina.DisciplinaId))
-                    {
+                    if (!await _disciplinaService.ExistsAsync(disciplina.DisciplinaId))
                         return NotFound();
-                    }
                     else
-                    {
                         throw;
-                    }
                 }
                 return RedirectToAction(nameof(Index));
             }
             return View(disciplina);
         }
 
+        // POST: Disciplina/EditMD
         [HttpPost]
         public async Task<IActionResult> EditMD(
-    Disciplina disciplina,
-    int? DodajTrenerId,
-    int[]? TreneriZaBrisanje,
-    List<int>? DodajTreneriId)
+            Disciplina disciplina,
+            int? DodajTrenerId,
+            int[]? TreneriZaBrisanje,
+            List<int>? DodajTreneriId)
         {
-            var disciplinaDb = await _context.Disciplina
-                .Include(d => d.Trener)
-                .FirstOrDefaultAsync(d => d.DisciplinaId == disciplina.DisciplinaId);
-
+            var disciplinaDb = await _disciplinaService.GetByIdWithRelationsAsync(disciplina.DisciplinaId);
             if (disciplinaDb == null)
                 return NotFound();
 
             disciplinaDb.Naziv = disciplina.Naziv;
             disciplinaDb.Opis = disciplina.Opis;
 
-            if (TreneriZaBrisanje != null)
-            {
-                foreach (var trenerId in TreneriZaBrisanje)
-                {
-                    var trenerZaUkloniti = disciplinaDb.Trener.FirstOrDefault(t => t.TrenerId == trenerId);
-                    if (trenerZaUkloniti != null)
-                    {
-                        disciplinaDb.Trener.Remove(trenerZaUkloniti);
-                    }
-                }
-            }
+            await _disciplinaService.EditMasterDetailAsync(disciplinaDb, DodajTrenerId, TreneriZaBrisanje, DodajTreneriId);
 
-            if (DodajTrenerId.HasValue && !disciplinaDb.Trener.Any(t => t.TrenerId == DodajTrenerId.Value))
-            {
-                var noviTrener = await _context.Trener.FindAsync(DodajTrenerId.Value);
-                if (noviTrener != null)
-                {
-                    disciplinaDb.Trener.Add(noviTrener);
-                }
-            }
-
-            if (DodajTreneriId != null)
-            {
-                foreach (var trenerId in DodajTreneriId)
-                {
-                    if (!disciplinaDb.Trener.Any(t => t.TrenerId == trenerId))
-                    {
-                        var trenerZaDodati = await _context.Trener.FindAsync(trenerId);
-                        if (trenerZaDodati != null)
-                        {
-                            disciplinaDb.Trener.Add(trenerZaDodati);
-                        }
-                    }
-                }
-            }
-
-            await _context.SaveChangesAsync();
+            await _disciplinaService.SaveAsync();
 
             return RedirectToAction(nameof(MasterDetails), new { id = disciplina.DisciplinaId });
         }
-
 
         // GET: Disciplina/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
-            var disciplina = await _context.Disciplina
-                .FirstOrDefaultAsync(m => m.DisciplinaId == id);
+            var disciplina = await _disciplinaService.GetByIdAsync(id.Value);
             if (disciplina == null)
-            {
                 return NotFound();
-            }
 
             return View(disciplina);
         }
@@ -211,86 +134,57 @@ namespace susak.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var disciplina = await _context.Disciplina.FindAsync(id);
-            if (disciplina != null)
-            {
-                _context.Disciplina.Remove(disciplina);
-            }
-
-            await _context.SaveChangesAsync();
+            await _disciplinaService.DeleteAsync(id);
+            await _disciplinaService.SaveAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool DisciplinaExists(int id)
+        private async Task<bool> DisciplinaExists(int id)
         {
-            return _context.Disciplina.Any(e => e.DisciplinaId == id);
+            return await _disciplinaService.ExistsAsync(id);
         }
 
         public async Task<IActionResult> MasterDetails(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
-            var disciplina = await _context.Disciplina
-                .Include(d => d.Trener)
-                .Include(d => d.Clan)
-                .Include(d => d.Trening)
-                .FirstOrDefaultAsync(m => m.DisciplinaId == id);
-
+            var disciplina = await _disciplinaService.GetByIdWithRelationsAsync(id.Value);
             if (disciplina == null)
-            {
                 return NotFound();
-            }
 
             return View(disciplina);
         }
 
         public async Task<IActionResult> Index(string searchString)
         {
-            var discipline = from d in _context.Disciplina
-                             select d;
-
-            if (!string.IsNullOrEmpty(searchString))
-            {
-                discipline = discipline.Where(d => d.Naziv.Contains(searchString));
-            }
-
-            return View(await discipline.ToListAsync());
+            var discipline = await _disciplinaService.GetAllAsync(searchString);
+            return View(discipline);
         }
 
         [HttpPost]
-        public IActionResult AddPostojeciClanToDisciplina(int DisciplinaId, int ClanId)
+        public async Task<IActionResult> AddPostojeciClanToDisciplina(int DisciplinaId, int ClanId)
         {
-            var disciplina = _context.Disciplina.Include(d => d.Clan)
-                                .FirstOrDefault(d => d.DisciplinaId == DisciplinaId);
-            var clan = _context.Clan.Find(ClanId);
+            var disciplina = await _disciplinaService.GetByIdWithRelationsAsync(DisciplinaId);
+            if (disciplina == null)
+                return NotFound();
 
-            if (disciplina != null && clan != null && !disciplina.Clan.Contains(clan))
-            {
-                disciplina.Clan.Add(clan);
-                _context.SaveChanges();
-            }
+            var clan = new Clan { ClanId = ClanId };
+
+            _disciplinaService.AddPostojeciClan(DisciplinaId, ClanId);
+
+            await _disciplinaService.SaveAsync();
 
             return RedirectToAction("MasterDetails", new { id = DisciplinaId });
         }
 
         [HttpPost]
-        public IActionResult AddNoviClanToDisciplina(int DisciplinaId, string Ime, string Prezime, string Oib)
+        public async Task<IActionResult> AddNoviClanToDisciplina(int DisciplinaId, string Ime, string Prezime, string Oib)
         {
             var clan = new Clan { Ime = Ime, Prezime = Prezime, Oib = Oib };
-            _context.Clan.Add(clan);
-            _context.SaveChanges();
+            _disciplinaService.AddClanToDisciplina(DisciplinaId, clan);
 
-            var disciplina = _context.Disciplina.Include(d => d.Clan)
-                                .FirstOrDefault(d => d.DisciplinaId == DisciplinaId);
-
-            if (disciplina != null)
-            {
-                disciplina.Clan.Add(clan);
-                _context.SaveChanges();
-            }
+            await _disciplinaService.SaveAsync();
 
             return RedirectToAction("MasterDetails", new { id = DisciplinaId });
         }
@@ -306,41 +200,35 @@ namespace susak.Controllers
         public IActionResult AddPostojeciClanToDisciplina(int id) // id = DisciplinaId
         {
             ViewBag.DisciplinaId = id;
-            ViewBag.Clanovi = _context.Clan
-                            .Select(c => new SelectListItem
-                            {
-                                Value = c.ClanId.ToString(),
-                                Text = c.Ime + " " + c.Prezime
-                            }).ToList();
+
+            
+            var clanovi = _disciplinaService.GetClanoviSelectList(); 
+            ViewBag.Clanovi = clanovi.Select(c => new SelectListItem
+            {
+                Value = c.GetType().GetProperty("ClanId")?.GetValue(c)?.ToString(),
+                Text = c.GetType().GetProperty("ImePrezime")?.GetValue(c)?.ToString()
+            }).ToList();
+
             return View();
         }
 
-        // DELETE: Disciplina/RemoveClan/5?clanId=10
+        // POST: Disciplina/UkloniClan
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UkloniClan(int disciplinaId, int clanId)
         {
-            var disciplina = await _context.Disciplina
-                .Include(d => d.Clan)
-                .FirstOrDefaultAsync(d => d.DisciplinaId == disciplinaId);
-
+            var disciplina = await _disciplinaService.GetByIdWithRelationsAsync(disciplinaId);
             if (disciplina == null)
-            {
                 return NotFound("Disciplina nije pronađena.");
-            }
 
             var clanToRemove = disciplina.Clan.FirstOrDefault(c => c.ClanId == clanId);
             if (clanToRemove == null)
-            {
                 return NotFound("Član nije pronađen u disciplini.");
-            }
 
-            disciplina.Clan.Remove(clanToRemove);
-
-            await _context.SaveChangesAsync();
+            await _disciplinaService.RemoveClanAsync(disciplinaId, clanId);
+            await _disciplinaService.SaveAsync();
 
             return RedirectToAction("MasterDetails", new { id = disciplinaId });
         }
-
     }
 }

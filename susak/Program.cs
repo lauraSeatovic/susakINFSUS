@@ -20,6 +20,9 @@ builder.Services.AddControllersWithViews();
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddScoped<IDisciplinaRepository, DisciplinaRepository>();
+builder.Services.AddScoped<IDisciplinaService, DisciplinaService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
