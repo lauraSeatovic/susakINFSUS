@@ -1,6 +1,6 @@
 ﻿# SUSAK - Sustav za upravljanje atletskim klubom – ASP.NET MVC
 
-Ova aplikacija omogućuje upravljanje atletskim klubom. Razvijena je u sklopu predmeta Informacijski sustavi na Fakultetu elktrotehnike i računarstva z Zagrebu.
+Ova aplikacija omogućuje upravljanje atletskim klubom. Razvijena je u sklopu predmeta Informacijski sustavi na Fakultetu elektrotehnike i računarstva u Zagrebu.
 
 ## Preduvjeti
 
@@ -17,9 +17,9 @@ Ova aplikacija omogućuje upravljanje atletskim klubom. Razvijena je u sklopu pr
 ```json
 {
   "ConnectionStrings": {
-    "susakContext": "Server=localhost;Database=SportskaDb;Trusted_Connection=True;"
+    "susakContext": "Server=localhost;Database=susak;Trusted_Connection=True;"
   }
-}
+}'''
 
 ## Pokretanje aplikacije
 
