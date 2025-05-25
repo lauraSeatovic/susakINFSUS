@@ -19,7 +19,8 @@ Ova aplikacija omogućuje upravljanje atletskim klubom. Razvijena je u sklopu pr
   "ConnectionStrings": {
     "susakContext": "Server=localhost;Database=susak;Trusted_Connection=True;"
   }
-}```
+}
+```
 
 ## Pokretanje aplikacije
 
