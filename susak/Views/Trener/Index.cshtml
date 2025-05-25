@@ -1,53 +1,48 @@
 ﻿@model IEnumerable<susak.Models.Trener>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Treneri";
 }
 
-<h1>Index</h1>
+<div class="container mt-4">
+    <h1>Treneri</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Ime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Prezime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StrucnaSprema)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Korisnik)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Ime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Prezime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StrucnaSprema)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Korisnik.KorisnickoIme)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.TrenerId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.TrenerId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.TrenerId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <form asp-action="Index" method="get" class="mb-3">
+        <div class="input-group">
+            <input type="text" name="searchString" value="@Context.Request.Query["searchString"]" class="form-control" placeholder="Pretraži po imenu, prezimenu..." />
+            <button type="submit" class="btn btn-outline-primary">Pretraži</button>
+        </div>
+    </form>
+
+    <p>
+        <a class="btn btn-success" asp-action="Create">Dodaj novog trenera</a>
+    </p>
+
+    <table class="table table-striped" style="table-layout: fixed; width: 100%;">
+        <thead class="table-light">
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.Ime)</th>
+                <th>@Html.DisplayNameFor(model => model.Prezime)</th>
+                <th>@Html.DisplayNameFor(model => model.StrucnaSprema)</th>
+                <th>@Html.DisplayNameFor(model => model.Korisnik)</th>
+                <th style="width: 25%;">Akcije</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.Ime)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Prezime)</td>
+                    <td>@Html.DisplayFor(modelItem => item.StrucnaSprema)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Korisnik.KorisnickoIme)</td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-primary" asp-action="Edit" asp-route-id="@item.TrenerId">Uredi</a>
+                        <a class="btn btn-sm btn-info" asp-action="Details" asp-route-id="@item.TrenerId">Detalji</a>
+                        <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@item.TrenerId">Obriši</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

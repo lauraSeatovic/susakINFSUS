@@ -1,6 +1,8 @@
 ﻿@model susak.Models.Disciplina
 
 <h2>Uredi disciplinu</h2>
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
 
 <form asp-action="EditMD" method="post">
     <input type="hidden" asp-for="DisciplinaId" />

@@ -31,25 +31,7 @@ namespace susak.Controllers
             return View(disciplina);
         }
 
-        // GET: Disciplina/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
 
-        // POST: Disciplina/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("DisciplinaId,Naziv,Opis")] Disciplina disciplina)
-        {
-            if (ModelState.IsValid)
-            {
-                await _disciplinaService.AddAsync(disciplina);
-                await _disciplinaService.SaveAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(disciplina);
-        }
 
         // GET: Disciplina/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -94,13 +76,11 @@ namespace susak.Controllers
             return View(disciplina);
         }
 
-        // POST: Disciplina/EditMD
-        [HttpPost]
         public async Task<IActionResult> EditMD(
-            Disciplina disciplina,
-            int? DodajTrenerId,
-            int[]? TreneriZaBrisanje,
-            List<int>? DodajTreneriId)
+                            Disciplina disciplina,
+                            int? DodajTrenerId,
+                            int[]? TreneriZaBrisanje,
+                            List<int>? DodajTreneriId)
         {
             var disciplinaDb = await _disciplinaService.GetByIdWithRelationsAsync(disciplina.DisciplinaId);
             if (disciplinaDb == null)
@@ -109,12 +89,22 @@ namespace susak.Controllers
             disciplinaDb.Naziv = disciplina.Naziv;
             disciplinaDb.Opis = disciplina.Opis;
 
-            await _disciplinaService.EditMasterDetailAsync(disciplinaDb, DodajTrenerId, TreneriZaBrisanje, DodajTreneriId);
+            try
+            {
+                await _disciplinaService.EditMasterDetailAsync(disciplinaDb, DodajTrenerId, TreneriZaBrisanje, DodajTreneriId);
+                await _disciplinaService.SaveAsync();
+                return RedirectToAction(nameof(MasterDetails), new { id = disciplina.DisciplinaId });
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
+            var treneriSelectList = _disciplinaService.GetTreneriSelectList();
+            ViewBag.SviTreneri = new SelectList(treneriSelectList, "TrenerId", "ImePrezime");
+            return View("Edit", disciplina);
 
-            await _disciplinaService.SaveAsync();
-
-            return RedirectToAction(nameof(MasterDetails), new { id = disciplina.DisciplinaId });
         }
+
 
         // GET: Disciplina/Delete/5
         public async Task<IActionResult> Delete(int? id)
@@ -230,5 +220,47 @@ namespace susak.Controllers
 
             return RedirectToAction("MasterDetails", new { id = disciplinaId });
         }
+        [HttpPost]
+        public async Task<IActionResult> Create(Disciplina disciplina, List<int>? DodajTreneriId, int? DodajTrenerId)
+        {
+            if (!ModelState.IsValid)
+            {
+                var treneriSelectList = _disciplinaService.GetTreneriSelectList();
+                ViewBag.SviTreneri = new SelectList(treneriSelectList, "TrenerId", "ImePrezime");
+                return View(disciplina);
+            }
+
+            var trenerIds = DodajTreneriId ?? new List<int>();
+
+            if (DodajTrenerId.HasValue && !trenerIds.Contains(DodajTrenerId.Value))
+            {
+                trenerIds.Add(DodajTrenerId.Value);
+            }
+
+            try
+            {
+                await _disciplinaService.CreateDisciplina(disciplina, trenerIds);
+                await _disciplinaService.SaveAsync();
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                var treneriSelectList = _disciplinaService.GetTreneriSelectList();
+                ViewBag.SviTreneri = new SelectList(treneriSelectList, "TrenerId", "ImePrezime");
+                return View(disciplina);
+            }
+        }
+
+
+        [HttpGet]
+        public IActionResult Create()
+        {
+            var treneriSelectList = _disciplinaService.GetTreneriSelectList();
+            ViewBag.SviTreneri = new SelectList(treneriSelectList, "TrenerId", "ImePrezime");
+            return View();
+        }
+
+
     }
 }

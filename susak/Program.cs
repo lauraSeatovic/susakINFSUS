@@ -23,6 +23,12 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IDisciplinaRepository, DisciplinaRepository>();
 builder.Services.AddScoped<IDisciplinaService, DisciplinaService>();
 
+builder.Services.AddScoped<IUlogaRepository, UlogaRepository>();
+builder.Services.AddScoped<IUlogaService, UlogaService>();
+
+builder.Services.AddScoped<ITrenerRepository, TrenerRepository>();
+builder.Services.AddScoped<ITrenerService, TrenerService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

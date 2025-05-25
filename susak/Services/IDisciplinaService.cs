@@ -17,4 +17,7 @@ public interface IDisciplinaService
     void AddPostojeciClan(int disciplinaId, int clanId);
     Task RemoveClanAsync(int disciplinaId, int clanId);
     List<object> GetClanoviSelectList();
+    Task CreateDisciplina(Disciplina disciplina, List<int> trenerIds);
+
+
 }

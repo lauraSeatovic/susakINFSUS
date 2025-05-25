@@ -13,7 +13,7 @@ public partial class Trening
 
     public DateTime? Datum { get; set; }
 
-    public int? Trajanje { get; set; }
+    public int Trajanje { get; set; }
 
     public string Opis { get; set; }
 

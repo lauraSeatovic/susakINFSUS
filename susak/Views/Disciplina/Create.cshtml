@@ -1,38 +1,41 @@
 ﻿@model susak.Models.Disciplina
 
-@{
-    ViewData["Title"] = "Create";
-}
+<h2>Nova disciplina</h2>
 
-<h1>Create</h1>
-
-<h4>Disciplina</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Naziv" class="control-label"></label>
-                <input asp-for="Naziv" class="form-control" />
-                <span asp-validation-for="Naziv" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Opis" class="control-label"></label>
-                <input asp-for="Opis" class="form-control" />
-                <span asp-validation-for="Opis" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label asp-for="Naziv" class="form-label"></label>
+        <input asp-for="Naziv" class="form-control" />
     </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+    <div class="mb-3">
+        <label asp-for="Opis" class="form-label"></label>
+        <textarea asp-for="Opis" class="form-control"></textarea>
+    </div>
 
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+    <div class="mb-3">
+        <label class="form-label fw-bold">Dodaj trenere</label>
+        <div>
+            @foreach (var trener in (SelectList)ViewBag.SviTreneri)
+            {
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="DodajTreneriId" value="@trener.Value" id="trener_@trener.Value" />
+                    <label class="form-check-label" for="trener_@trener.Value">@trener.Text</label>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label for="DodajTrenera" class="form-label fw-bold">Dodaj trenera (primjer padajuće liste)</label>
+        <select id="DodajTrenera" name="DodajTrenerId" class="form-select">
+            <option value="">-- Odaberite trenera --</option>
+            @foreach (var trener in (SelectList)ViewBag.SviTreneri)
+            {
+                <option value="@trener.Value">@trener.Text</option>
+            }
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-success">Spremi</button>
+</form>

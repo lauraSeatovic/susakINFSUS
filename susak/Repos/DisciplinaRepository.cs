@@ -44,13 +44,25 @@ public class DisciplinaRepository : IDisciplinaRepository
 
     public async Task DeleteAsync(int id)
     {
-        var disciplina = await _context.Disciplina.FindAsync(id);
-        if (disciplina != null)
-        {
-            _context.Disciplina.Remove(disciplina);
-            await _context.SaveChangesAsync();
-        }
+        var disciplina = await _context.Disciplina
+            .Include(d => d.Trener) 
+            .Include(d => d.Clan)
+            .Include(d => d.Trening)
+            .FirstOrDefaultAsync(d => d.DisciplinaId == id);
+
+        if (disciplina == null)
+            throw new InvalidOperationException("Disciplina ne postoji.");
+
+        disciplina.Trening.Clear();
+        disciplina.Trener.Clear();
+        disciplina.Clan.Clear();
+
+        // Na kraju brišemo disciplinu
+        _context.Disciplina.Remove(disciplina);
+
+        await _context.SaveChangesAsync();
     }
+
 
     public async Task<bool> ExistsAsync(int id)
     {
@@ -173,4 +185,32 @@ public class DisciplinaRepository : IDisciplinaRepository
             await _context.SaveChangesAsync();
         }
     }
+
+    public void CreateDisciplina(Disciplina disciplina, List<int> trenerIds)
+    {
+        if (trenerIds != null && trenerIds.Any())
+        {
+            disciplina.Trener = _context.Trener
+                .Where(t => trenerIds.Contains(t.TrenerId))
+                .ToList();
+        }
+
+        _context.Disciplina.Add(disciplina);
+        _context.SaveChanges();
+    }
+    public async Task<List<Trening>> GetTreninziForDisciplinaAsync(int disciplinaId)
+    {
+        return await _context.Trening
+            .Where(t => t.DisciplinaId == disciplinaId)
+            .ToListAsync();
+    }
+
+    public async Task<List<Trening>> GetTreninziForTrenerAsync(int trenerId)
+    {
+        return await _context.Trening
+            .Where(t => t.Disciplina.Trener.Any(tr => tr.TrenerId == trenerId))
+            .ToListAsync();
+    }
+
+
 }

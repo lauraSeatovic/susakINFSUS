@@ -66,6 +66,44 @@ public class DisciplinaService : IDisciplinaService
 
     public async Task EditMasterDetailAsync(Disciplina disciplina, int? DodajTrenerId, int[]? TreneriZaBrisanje, List<int>? DodajTreneriId)
     {
+        if (DodajTrenerId.HasValue)
+        {
+            if (DodajTreneriId == null)
+                DodajTreneriId = new List<int>();
+
+            if (!DodajTreneriId.Contains(DodajTrenerId.Value))
+                DodajTreneriId.Add(DodajTrenerId.Value);
+        }
+        var disciplinaTreninzi = await _repository.GetTreninziForDisciplinaAsync(disciplina.DisciplinaId);
+
+        if (DodajTreneriId != null && disciplinaTreninzi.Any())
+        {
+            foreach (var trenerId in DodajTreneriId)
+            {
+                var trenerTreninzi = await _repository.GetTreninziForTrenerAsync(trenerId);
+
+                foreach (var treningDisciplina in disciplinaTreninzi)
+                {
+                    var start1 = treningDisciplina.Datum;
+                    var end1 = start1.Value.AddMinutes(treningDisciplina.Trajanje);
+
+                    foreach (var treningTrenera in trenerTreninzi)
+                    {
+                        var start2 = treningTrenera.Datum;
+                        var end2 = start2.Value.AddMinutes(treningTrenera.Trajanje);
+
+                        bool overlaps = start1 < end2 && start2 < end1;
+
+                        if (overlaps)
+                        {
+                            throw new InvalidOperationException(
+                                $"Postoji preklapanje treninga.");
+                        }
+                    }
+                }
+            }
+        }
+
         await _repository.EditMasterDetailAsync(disciplina, DodajTrenerId, TreneriZaBrisanje, DodajTreneriId);
     }
 
@@ -88,4 +126,40 @@ public class DisciplinaService : IDisciplinaService
     {
         return _repository.GetClanoviSelectList();
     }
+
+    public async Task CreateDisciplina(Disciplina disciplina, List<int> trenerIds)
+    {
+        var disciplinaTreninzi = await _repository.GetTreninziForDisciplinaAsync(disciplina.DisciplinaId);
+
+        if (trenerIds != null && disciplinaTreninzi.Any())
+        {
+            foreach (var trenerId in trenerIds)
+            {
+                var trenerTreninzi = await _repository.GetTreninziForTrenerAsync(trenerId);
+
+                foreach (var treningDisciplina in disciplinaTreninzi)
+                {
+                    var start1 = treningDisciplina.Datum;
+                    var end1 = start1.Value.AddMinutes(treningDisciplina.Trajanje);
+
+                    foreach (var treningTrenera in trenerTreninzi)
+                    {
+                        var start2 = treningTrenera.Datum;
+                        var end2 = start2.Value.AddMinutes(treningTrenera.Trajanje);
+
+                        bool overlaps = start1 < end2 && start2 < end1;
+
+                        if (overlaps)
+                        {
+                            throw new InvalidOperationException(
+                                $"Postoji preklapanje treninga.");
+                        }
+                    }
+                }
+            }
+        }
+
+        _repository.CreateDisciplina(disciplina, trenerIds);
+    }
+
 }

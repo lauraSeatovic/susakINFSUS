@@ -18,5 +18,10 @@ public interface IDisciplinaRepository
     void AddPostojeciClan(int disciplinaId, int clanId);
     Task RemoveClanAsync(int disciplinaId, int clanId);
     List<object> GetClanoviSelectList();
+    void CreateDisciplina(Disciplina disciplina, List<int> trenerIds);
+
+    Task<List<Trening>> GetTreninziForDisciplinaAsync(int disciplinaId);
+    Task<List<Trening>> GetTreninziForTrenerAsync(int trenerId);
+
 }
 
